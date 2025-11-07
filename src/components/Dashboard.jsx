@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 
 import { updateVehicleExit } from "../services/firebaseService";
 
-import { formatTimestamp } from "../assets/fuction";
+import { formatTimestamp } from "../assets/Fuction";
 import { StatCard } from "./StatCard";
 import { SearchIcon } from "../assets/Icon";
 
