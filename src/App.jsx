@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { Footer } from './components/Footer';
 import { Contact } from './components/Contact';
 import { Reports } from './components/Reports';
@@ -11,7 +13,6 @@ import { signIn, streamVehicles } from './services/firebaseService';
 
 
 export default function App() {
-  const [activeView, setActiveView] = useState('home');
   const [vehicles, setVehicles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,34 +31,23 @@ export default function App() {
     return () => unsubscribe();
   }, []); // The empty dependency array ensures this runs only once
 
-  const renderView = () => {
-    if (isLoading) {
-      return <div className="text-center p-10">Loading vehicle data...</div>;
-    }
-
-    switch (activeView) {
-      case 'home':
-        return <Home setActiveView={setActiveView} />;
-      case 'dashboard':
-        // The Dashboard component no longer needs the 'db' prop
-        return <Dashboard vehicles={vehicles} />;
-      case 'addVehicle':
-        // The AddVehicle component no longer needs the 'db' prop
-        return <AddVehicle setActiveView={setActiveView} />;
-      case 'reports':
-        return <Reports />;
-      case 'contact':
-        return <Contact />;
-      default:
-        return <Home setActiveView={setActiveView} />;
-    }
-  };
+  if (isLoading) {
+    return <div className="text-center p-10">Loading vehicle data...</div>;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header activeView={activeView} setActiveView={setActiveView} />
+      <Toaster position="top-right" />
+      <Header />
       <main className="flex-1 w-full max-w-7xl mx-auto p-0 mb-15 sm:p-0 lg:p-0">
-        {renderView()}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard vehicles={vehicles} />} />
+          <Route path="/add-vehicle" element={<AddVehicle />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
       <Footer />
     </div>

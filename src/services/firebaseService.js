@@ -1,24 +1,25 @@
+/* global __initial_auth_token */
 import { initializeApp } from "firebase/app";
-import { 
-    getAuth, 
-    signInAnonymously, 
-    signInWithCustomToken 
+import {
+    getAuth,
+    signInAnonymously,
+    signInWithCustomToken
 } from "firebase/auth";
-import { 
-    getFirestore, 
-    collection, 
-    onSnapshot, 
-    addDoc, 
-    doc, 
-    updateDoc, 
-    serverTimestamp 
+import {
+    getFirestore,
+    collection,
+    onSnapshot,
+    addDoc,
+    doc,
+    updateDoc,
+    serverTimestamp
 } from "firebase/firestore";
 
 // --- INITIALIZATION ---
 
 // Get the Firebase config object from your environment variables
-const firebaseConfig = import.meta.env.VITE_FIREBASE_CONFIG 
-    ? JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG) 
+const firebaseConfig = import.meta.env.VITE_FIREBASE_CONFIG
+    ? JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
     : JSON.parse({});
 
 // Get the collection path from environment variables for flexibility
@@ -40,6 +41,7 @@ const vehiclesCollection = collection(db, VEHICLES_COLLECTION_PATH);
  */
 export const signIn = async () => {
     try {
+        // eslint-disable-next-line no-undef
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
             await signInWithCustomToken(auth, __initial_auth_token);
         } else {
@@ -60,9 +62,9 @@ export const signIn = async () => {
  */
 export const streamVehicles = (callback) => {
     const unsubscribe = onSnapshot(vehiclesCollection, (querySnapshot) => {
-        const vehiclesData = querySnapshot.docs.map(doc => ({ 
-            ...doc.data(), 
-            id: doc.id 
+        const vehiclesData = querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
         }));
         callback(vehiclesData);
     });

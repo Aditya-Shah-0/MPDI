@@ -1,49 +1,45 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
 import { addVehicleEntry } from "../services/firebaseService";
 
-export const AddVehicle = ({ setActiveView }) => {
+export const AddVehicle = () => {
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [vehicleNumber, setVehicleNumber] = useState('');
     const [idNumber, setIdNumber] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [message, setMessage] = useState('');
-
-    const VEHICLES_COLLECTION_PATH = import.meta.env.VITE_FIREBASE_COLLECTION_PATH;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name || !vehicleNumber || !idNumber) {
-            setMessage({ type: 'error', text: 'Please fill all the fields.' });
+            toast.error('Please fill all the fields.');
             return;
         }
         setIsSubmitting(true);
-        setMessage({ type: '', text: '' });
 
         try {
-            // The logic is now a clean, single function call
             await addVehicleEntry({ name, vehicleNumber, idNumber });
-            
-            setMessage({ type: 'success', text: 'Vehicle entry recorded successfully!'});
+
+            toast.success('Vehicle entry recorded successfully!');
             setName('');
             setVehicleNumber('');
             setIdNumber('');
             setTimeout(() => {
-                setMessage({ type: '', text: '' });
-                setActiveView('dashboard');
-            }, 2000);
+                navigate('/dashboard');
+            }, 1000);
 
         } catch (error) {
             console.error("Error adding document: ", error);
-            setMessage({ type: 'error', text: 'Failed to record entry. Please try again.' });
+            toast.error('Failed to record entry. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
-    
+
     return (
         <div className="bg-white p-8 rounded-lg shadow-md max-w-lg mx-auto">
             <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">Add New Vehicle Entry (Manual)</h2>
-            {message.text && <p className={`text-center p-3 mb-4 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{message.text}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="driverName">Driver Name</label>
